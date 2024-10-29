@@ -1,9 +1,16 @@
-# snakegame
+# Snake Game
 
-Instituição: CESAR School
+## INSTITUIÇÃO:
 
-Cadeira: Programação Imperativa e Funcional - 2024.2
+* CESAR School
 
-Membros: 
-João Antônio Sampaio Ferreira @JoaoAntonioSampaioFerreira
-José Jorge da Silva Dias @JJorgeD
+## DISCIPLINA:
+
+* Programação Imperativa e Funcional - 2024.2.
+
+## GRUPO
+
+* JOÃO ANTÔNIO SAMPAIO FERREIRA @JoaoAntonioSampaioFerreira
+* JOSE JORGE DA SILVA DIAS @JJorgeD
+
+
