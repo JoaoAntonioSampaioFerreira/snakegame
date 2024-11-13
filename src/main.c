@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
 #include <time.h>
 #include <unistd.h>
@@ -32,18 +33,23 @@ struct Jogo {
     struct Comida *comida;
     int fimDeJogo;
     char direcao;
+    int pontuacao;
+    int maior_pontuacao;
 };
 
 void iniciarJogo(struct Jogo *jogo);
 void desenharJogo(struct Jogo *jogo);
 void atualizarJogo(struct Jogo *jogo);
 void encerrarJogo(struct Jogo *jogo);
+void salvar_maior_pontuacao(int pontuacao);
+int carregar_maior_pontuacao();
 
 int main() {
     static int tecla = 0;
     struct Jogo jogo;
     srand(time(0));
 
+    jogo.maior_pontuacao = carregar_maior_pontuacao();
     iniciarJogo(&jogo);
 
     screenInit(1);
@@ -75,6 +81,10 @@ int main() {
 
     encerrarJogo(&jogo);
 
+    if (jogo.pontuacao > jogo.maior_pontuacao) {
+        salvar_maior_pontuacao(jogo.pontuacao);
+    }
+
     keyboardDestroy();
     screenDestroy();
     timerDestroy();
@@ -105,12 +115,14 @@ void iniciarJogo(struct Jogo *jogo) {
     jogo->comida->pos.x = rand() % (MAXX - 2 * margem) + margem;
     jogo->comida->pos.y = rand() % (MAXY - 2 * margem) + margem;
 
+    jogo->pontuacao = 0;
     jogo->fimDeJogo = 0;
     jogo->direcao = 'd';
 }
 
 void desenharJogo(struct Jogo *jogo) {
     screenClear();
+
     usleep(10000);
 
     screenGotoxy(0, 0);
@@ -139,7 +151,13 @@ void desenharJogo(struct Jogo *jogo) {
     screenGotoxy(jogo->comida->pos.x, jogo->comida->pos.y);
     printf("*");
 
+    char pontuacao[50];
+    sprintf(pontuacao, "Pontuacao: %d  Maior Pontuacao: %d", jogo->pontuacao, jogo->maior_pontuacao);
+    screenGotoxy(0, 0);
+    printf("%s", pontuacao);
+
     screenUpdate();
+
     usleep(10000);
 }
 
@@ -172,6 +190,8 @@ void atualizarJogo(struct Jogo *jogo) {
     jogo->cobra->cabeca = novaCabeca;
 
     if (novaPos.x == jogo->comida->pos.x && novaPos.y == jogo->comida->pos.y) {
+        jogo->pontuacao++;
+
         int margem = 5;
         jogo->comida->pos.x = rand() % (MAXX - 2 * margem) + margem;
         jogo->comida->pos.y = rand() % (MAXY - 2 * margem) + margem;
@@ -203,4 +223,21 @@ void encerrarJogo(struct Jogo *jogo) {
     }
     free(jogo->cobra);
     free(jogo->comida);
+}
+void salvar_maior_pontuacao(int pontuacao) {
+    FILE *file = fopen("maior_pontuação.txt", "w");
+    if (file != NULL) {
+        fprintf(file, "%d", pontuacao);
+        fclose(file);
+    }
+}
+
+int carregar_maior_pontuacao() {
+    int pontuacao = 0;
+    FILE *file = fopen("maior_pontuação.txt", "r");
+    if (file != NULL) {
+        fscanf(file, "%d", &pontuacao);
+        fclose(file);
+    }
+    return pontuacao;
 }
